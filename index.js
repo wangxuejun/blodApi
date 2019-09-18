@@ -1,25 +1,24 @@
-const express = require('express')
-const db = require('./db.js')
-const mysql = require('mysql')
-const app = express()
-var multipart = require('connect-multiparty');
-
-var coon = mysql.createConnection(db.mysql)
-coon.connect((err) => {
-	if (err) {
-		console.log('err1')
-		return
-	}
-	console.log('success2')
+const express = require('express');
+const app = express();
+const con = require('./connect');
+app.all('*', function(req, res, next) {
+   res.header("Access-Control-Allow-Origin", "*");
+   res.header("Access-Control-Allow-Headers", "X-Requested-With");
+   res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+   res.header("X-Powered-By",' 3.2.1');
+   res.header("Content-Type", "application/json;charset=utf-8");
+   next();
 });
 
-app.get('/', (req, res) => {
+app.listen(3000, () => console.log('Example app listening on port 3000!'))
+app.post('/user', (req, res) => {
 	let sql = "SELECT * FROM user";
-	coon.query(sql, (err, result) => {
+	let connect = con();
+	connect.query(sql, (err, result) => {
 		if (err) {
-			console.log(err)
+			console.log(err);
 		}
-		res.send(result)
+		res.send(result);
+		connect.end();
 	})
 })
-app.listen(3000, () => console.log('Example app listening on port 3000!'))
